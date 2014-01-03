@@ -23,7 +23,7 @@ module Motion; module Project; class Config
 end; end; end
 
 namespace 'screenshots' do
-  task :start => 'pod:install' do
+  task :start do
     screenshots_output_path = ENV['SCREENSHOTS_DIR']
     screenshots_output_path ||= App.config.screenshots_output_path
     screenshots_output_path ||= File.join(`pwd`.strip, "screenshots", Time.now.to_i.to_s)
@@ -51,8 +51,10 @@ namespace 'screenshots' do
       else
         `open #{screenshots_output_path.shellescape}`
       end
+      `bundle exec rake pod:install`
     }
 
+    Rake::Task["pod:install"].invoke
     Rake::Task["default"].invoke
   end
 end
