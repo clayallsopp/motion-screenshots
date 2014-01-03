@@ -15,3 +15,5 @@ nbproject
 .eprj
 .sass-cache
 .idea
+
+/Gemfile.lock
