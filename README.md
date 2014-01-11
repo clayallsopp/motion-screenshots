@@ -1,6 +1,6 @@
 # motion-screenshots
 
-TODO: Write a gem description
+Automate your App Store screenshots with `rake screenshots`. Powered by [KSScreenshotManager](https://github.com/ksuther/KSScreenshotManager).
 
 ## Installation
 
@@ -18,12 +18,81 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Configuration
 
-## Contributing
+By default, screenshots will be placed in a `./screenshots/#{timestamp}` directory in your project. You can configure this a few different ways:
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+- `ENV['SCREENSHOTS_DIR']` - use this environment variable
+- `app.screenshots_output_path=` - set this value in your Rakefile
+- `app.manage_screenshots do |output_path|` - add this block in your Rakefile
+
+### Code
+
+Create one or more subclasses of `Motion::Screenshots::Base` and add them to `./app/screenshots`. This class uses a DSL you can use to setup what happens before and after various screenshots are taken.
+
+```ruby
+class ShopsScreenshots < Motion::Screenshots::Base
+  # if you want to group each "run" of screenshots into folders,
+  # you can use this method (optional)
+  group_by { User.current.id }
+
+  # Use `.screenshot` to take a synchronous shot
+  screenshot "menu" do
+    before do
+      # scroll down for a nice action shot
+      App.delegate.table_view_controller.scrollToRowAtIndexPath(
+        NSIndexPath.indexPathForRow(2, inSection: 1),
+        animated: false,
+        scrollPosition: UITableViewScrollPositionMiddle
+      )
+    end
+  end
+
+  # Use `.async_screenshot` to take a screenshot
+  # at some point in the future (i.e. a timer, network calls, etc)
+  # Invoke `#ready!` to take the shot
+  async_screenshot "profile" do
+    before do
+      App.delegate.table_view_controller.selectRowAtIndexPath(
+        NSIndexPath.indexPathForRow(0, inSection: 1),
+        animated: false,
+        scrollPosition: UITableViewScrollPositionNone
+      )
+
+      # give the network some time...
+      Dispatch::Queue.main.after(3) {
+        ready!
+      }
+    end
+
+    # clean-up
+    after do
+      App.window.rootViewController.popViewControllerAnimated(false)
+    end
+  end
+end
+```
+
+Then, elsewhere in your code, simply let motion-screenshots know when to start the process:
+
+```ruby
+class AppDelegate
+
+  def application(application, didFinishLaunchingWithOptions:launchOptions)
+    # do other stuff...
+
+    ShopsScreenshots.start!
+  end
+end
+```
+
+Screenshots are executed in the order listed in your class - doing any cleanup or pre-screenshot preparation is left to you.
+
+### Running
+
+Simple run `rake screenshots` and you're off! The task will uninstall and reinstall your CocoaPods, as to not include any of the private APIs bundled with `KSScreenshotManager`.
+
+## Contact
+
+[Clay Allsopp](http://clayallsopp.com/)
+[@clayallsopp](https://twitter.com/clayallsopp)
