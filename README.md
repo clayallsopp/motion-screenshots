@@ -31,10 +31,7 @@ By default, screenshots will be placed in a `./screenshots/#{timestamp}` directo
 Create one or more subclasses of `Motion::Screenshots::Base` and add them to `./app/screenshots`. This class uses a DSL you can use to setup what happens before and after various screenshots are taken.
 
 ```ruby
-class ShopsScreenshots < Motion::Screenshots::Base
-  # if you want to group each "run" of screenshots into folders,
-  # you can use this method (optional)
-  group_by { User.current.id }
+class AppScreenshots < Motion::Screenshots::Base
 
   # Use `.screenshot` to take a synchronous shot
   screenshot "menu" do
@@ -81,7 +78,7 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     # do other stuff...
 
-    ShopsScreenshots.start!
+    AppScreenshots.start!
   end
 end
 ```
