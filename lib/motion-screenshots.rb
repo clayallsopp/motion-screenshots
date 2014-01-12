@@ -51,6 +51,7 @@ namespace 'screenshots' do
       else
         `open #{screenshots_output_path.shellescape}`
       end
+      puts "Re-installing pods..."
       `bundle exec rake pod:install`
     }
 
