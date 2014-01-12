@@ -2,6 +2,8 @@
 
 Automate your App Store screenshots with `rake screenshots`. Powered by [KSScreenshotManager](https://github.com/ksuther/KSScreenshotManager).
 
+Check out some [sample output](https://github.com/usepropeller/motion-screenshots/tree/master/sample/screenshots/1389485329).
+
 ## Installation
 
 Add this line to your application's Gemfile:
