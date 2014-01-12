@@ -1,0 +1,4 @@
+source 'https://rubygems.org'
+
+gem 'motion-screenshots', path: '../'
+gem 'afmotion'
