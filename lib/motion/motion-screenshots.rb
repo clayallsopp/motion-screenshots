@@ -82,7 +82,7 @@ module Motion
         @manager = manager
         @before_actions = nil
         @after_actions = nil
-        instance_eval(&eval_block)
+        instance_eval(&eval_block) if eval_block
       end
 
       def before(&actions)
