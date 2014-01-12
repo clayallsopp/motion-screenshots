@@ -99,8 +99,8 @@ module Motion
 
       def to_KSScreenshotAction
         KSScreenshotAction.actionWithName(@title, asynchronous: @is_async,
-          actionBlock:-> { @before_actions.call },
-          cleanupBlock: -> { @after_actions.call if @after_action }
+          actionBlock:-> { @before_actions.call if @before_actions },
+          cleanupBlock: -> { @after_actions.call if @after_actions }
         )
       end
     end
