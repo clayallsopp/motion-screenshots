@@ -1,9 +1,8 @@
 # -*- encoding: utf-8 -*-
-VERSION = "0.0.4"
 
 Gem::Specification.new do |spec|
   spec.name          = "motion-screenshots"
-  spec.version       = VERSION
+  spec.version       = "0.0.5"
   spec.authors       = ["Clay Allsopp"]
   spec.email         = ["clay@usepropeller.com"]
   spec.description   = "Take screenshots with RubyMotion"
