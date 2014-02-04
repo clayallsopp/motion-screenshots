@@ -66,8 +66,8 @@ module Motion
 
         @started = true
 
-        documents_path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0].retain
-        screenshot_path = File.join(documents_path, SCREENSHOTS_BASE_FOLDER)
+        @documents_path = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0].retain
+        screenshot_path = File.join(@documents_path, SCREENSHOTS_BASE_FOLDER)
         screenshot_path = File.join(screenshot_path, group_by_block.call) if @group_by_block
         self.screenshotsURL = NSURL.fileURLWithPath(screenshot_path)
 
