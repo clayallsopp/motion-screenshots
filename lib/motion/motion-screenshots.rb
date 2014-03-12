@@ -94,7 +94,17 @@ module Motion
       end
 
       def ready!
-        @manager.actionIsReady
+        if @delay
+          Dispatch::Queue.main.after(@delay.to_f) {
+            @manager.actionIsReady
+          }
+        else
+          @manager.actionIsReady
+        end
+      end
+
+      def ready_delay(amount)
+        @delay = amount
       end
 
       def to_KSScreenshotAction
