@@ -51,6 +51,8 @@ class AppScreenshots < Motion::Screenshots::Base
   # at some point in the future (i.e. a timer, network calls, etc)
   # Invoke `#ready!` to take the shot
   async_screenshot "profile" do
+    ready_delay 3 # delays the screenshot to 3 seconds after ready! is called
+
     before do
       App.delegate.table_view_controller.selectRowAtIndexPath(
         NSIndexPath.indexPathForRow(0, inSection: 1),
@@ -58,10 +60,7 @@ class AppScreenshots < Motion::Screenshots::Base
         scrollPosition: UITableViewScrollPositionNone
       )
 
-      # give the network some time...
-      Dispatch::Queue.main.after(3) {
-        ready!
-      }
+      ready!
     end
 
     # clean-up
@@ -72,14 +71,15 @@ class AppScreenshots < Motion::Screenshots::Base
 end
 ```
 
-Then, elsewhere in your code, simply let motion-screenshots know when to start the process:
+Then, after your initial views have appeared, simply let motion-screenshots know when to start the process:
 
 ```ruby
-class AppDelegate
+class MyFirstViewController
 
-  def application(application, didFinishLaunchingWithOptions:launchOptions)
-    # do other stuff...
+  def viewDidAppear(animated)
+    super
 
+    # May need to wrap in a Dispatch::Queue.main.async{} block
     AppScreenshots.start!
   end
 end
