@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "motion-screenshots"
-  spec.version       = "0.0.6"
+  spec.version       = "0.1.0"
   spec.authors       = ["Clay Allsopp"]
   spec.email         = ["clay@usepropeller.com"]
   spec.description   = "Take screenshots with RubyMotion"
@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "motion-cocoapods", ">= 1.4.0"
+  spec.add_dependency "motion-env", ">= 0.0.3"
 
   spec.add_development_dependency "rake"
 end

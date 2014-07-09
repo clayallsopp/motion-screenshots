@@ -26,7 +26,8 @@ By default, screenshots will be placed in a `./screenshots/#{timestamp}` directo
 
 - `ENV['SCREENSHOTS_DIR']` - use this environment variable
 - `app.screenshots_output_path=` - set this value in your Rakefile
-- `app.manage_screenshots do |output_path|` - add this block in your Rakefile
+- `app.before_screenshots do` - add this block in your Rakefile
+- `app.after_screenshots do |output_path|` - add this block in your Rakefile
 
 ### Code
 

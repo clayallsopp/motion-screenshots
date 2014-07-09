@@ -13,26 +13,37 @@ Motion::Project::App.setup do |app|
 end
 
 module Motion; module Project; class Config
-  attr_accessor :screenshot_callback
+  attr_accessor :screenshot_callback, :is_taking_screenshots
 
   variable :screenshots_output_path
 
-  def manage_screenshots(&block)
+  def before_screenshots(&block)
+    if is_taking_screenshots
+      block.call
+    end
+  end
+
+  def after_screenshots(&block)
     @screenshot_callback = block
   end
+
+  alias_method :manage_screenshots, :after_screenshots
 end; end; end
 
 namespace 'screenshots' do
   task :start do
-    screenshots_output_path = ENV['SCREENSHOTS_DIR']
-    screenshots_output_path ||= App.config.screenshots_output_path
-    screenshots_output_path ||= File.join(`pwd`.strip, "screenshots", Time.now.to_i.to_s)
-    FileUtils.mkdir_p screenshots_output_path
-
     app_config = Motion::Project::App.config_without_setup
     app_config.pods do
       pod 'KSScreenshotManager'
     end
+
+    app_config.is_taking_screenshots = true
+    app_config.env['MOTION_SCREENSHOTS_RUNNING'] = true
+
+    screenshots_output_path = ENV['SCREENSHOTS_DIR']
+    screenshots_output_path ||= App.config.screenshots_output_path
+    screenshots_output_path ||= File.join(`pwd`.strip, "screenshots", Time.now.to_i.to_s)
+    FileUtils.mkdir_p screenshots_output_path
 
     at_exit {
       # Copy files
