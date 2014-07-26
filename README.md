@@ -17,6 +17,10 @@ And then execute:
 Or install it yourself as:
 
     $ gem install motion-screenshots
+    
+And require in your Rakefile with:
+
+    require "motion-screenshots"
 
 ## Usage
 
