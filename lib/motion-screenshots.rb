@@ -3,8 +3,10 @@ unless defined?(Motion::Project::Config)
 end
 
 require 'motion-cocoapods'
+require 'motion-env'
 require 'fileutils'
 require 'shellwords'
+require 'plist'
 
 lib_dir_path = File.dirname(File.expand_path(__FILE__))
 Motion::Project::App.setup do |app|
@@ -47,13 +49,31 @@ namespace 'screenshots' do
 
     at_exit {
       # Copy files
-      target = ENV['target'] || app_config.sdk_version
-      sim_apps = File.expand_path("~/Library/Application Support/iPhone Simulator/*/Applications")
-      app_dir = nil
       app = app_config.app_bundle('iPhoneSimulator')
-      app_dir = File.dirname(Dir.glob("#{sim_apps}/**/#{File.basename(app)}").sort_by { |f|
-        File.mtime(f)
-      }.reverse.first)
+      app_id = app_config.identifier
+      app_dir = nil
+      
+      if File.directory? File.expand_path( "~/Library/Developer/CoreSimulator/Devices" )
+        # XCode 6+ uses the same random UUID layout to store applications and
+        # application sandboxes as the native iOS device does (== more work..).
+        sim_apps = File.expand_path("~/Library/Developer/CoreSimulator/Devices")
+        app_dir = File.dirname(Dir.glob("#{sim_apps}/**/#{File.basename(app)}").sort_by{ |f|
+          File.mtime(f)
+        }.reverse.first)
+        # Get the simulator UUID, then read it's application install data..
+        sim_base = app_dir.gsub( %r{(^.*/Devices/\h{8}-(?:\h{4}-){3}\h{12})/.*}, '\\1' )
+        app_infos = Plist::parse_xml(open("|plutil -convert xml1 -o - -- #{sim_base}/data/Library/BackBoard/applicationState.plist").read)
+        # ..and finally determine the sandbox data directory
+        app_dir = app_infos[app_config.identifier]['compatibilityInfo']['sandboxPath']
+      else
+        # pre XCode 6
+        target = ENV['target'] || app_config.sdk_version
+        sim_apps = File.expand_path("~/Library/Application Support/iPhone Simulator/*/Applications")
+        app_dir = File.dirname(Dir.glob("#{sim_apps}/**/#{File.basename(app)}").sort_by { |f|
+          File.mtime(f)
+        }.reverse.first)
+      end
+
       motion_screenshots = File.join(app_dir, "Documents", "motion_screenshots")
       screenshot_files = Dir[File.join(motion_screenshots, "**", "*")]
       FileUtils.cp_r(screenshot_files, screenshots_output_path)
