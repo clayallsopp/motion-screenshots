@@ -42,6 +42,12 @@ namespace 'screenshots' do
     app_config.is_taking_screenshots = true
     app_config.env['MOTION_SCREENSHOTS_RUNNING'] = true
 
+    if app_config.archs['iPhoneSimulator'].include? 'x86_64'
+      # required until KSScreenshotManager is 64bit compatible
+      App.warn 'Forcing 32bit-only build target for screenshots..'
+      app_config.archs['iPhoneSimulator'] = %w(i386)
+    end
+
     screenshots_output_path = ENV['SCREENSHOTS_DIR']
     screenshots_output_path ||= App.config.screenshots_output_path
     screenshots_output_path ||= File.join(`pwd`.strip, "screenshots", Time.now.to_i.to_s)
