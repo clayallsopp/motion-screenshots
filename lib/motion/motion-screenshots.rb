@@ -1,11 +1,3 @@
-if !Kernel.const_defined?(:KSScreenshotManager)
-  class KSScreenshotManager
-    def init
-      @started = true
-    end
-  end
-end
-
 module Motion
   module Screenshots
     class Base < KSScreenshotManager
@@ -63,14 +55,7 @@ module Motion
 
       def start!
         return if @started
-
         @started = true
-
-        @documents_path = String.new(NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)[0])
-        screenshot_path = File.join(@documents_path, SCREENSHOTS_BASE_FOLDER)
-        screenshot_path = File.join(screenshot_path, group_by_block.call) if @group_by_block
-        self.screenshotsURL = NSURL.fileURLWithPath(screenshot_path)
-
         takeScreenshots
       end
     end
@@ -108,10 +93,12 @@ module Motion
       end
 
       def to_KSScreenshotAction
-        KSScreenshotAction.actionWithName(@title, asynchronous: @is_async,
+        action = KSScreenshotAction.actionWithName(@title, asynchronous: @is_async,
           actionBlock:-> { @before_actions.call if @before_actions },
           cleanupBlock: -> { @after_actions.call if @after_actions }
         )
+        action.includeStatusBar = true if ENV['SCREENSHOTS_INCLUDE_STATUSBAR']
+        action
       end
     end
   end
