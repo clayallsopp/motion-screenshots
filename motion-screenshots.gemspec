@@ -20,8 +20,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "motion-cocoapods", ">= 1.7.0"
-  spec.add_dependency "motion-env", ">= 0.0.4"
-  spec.add_dependency "plist", ">= 3.1.0"
   
   spec.add_development_dependency "rake"
 end
